@@ -1,0 +1,200 @@
+
+
+### Theory: Queue Data Structure
+
+A queue is a linear data structure that follows the First In First Out (FIFO) principle. This means that the first element added to the queue will be the first one to be removed. Think of a queue as a line of people waiting for a service; the person who comes first gets served first.
+
+#### Key Operations
+1. **Enqueue**: Adding an element to the end of the queue.
+2. **Dequeue**: Removing an element from the front of the queue.
+3. **IsEmpty**: Checking if the queue is empty.
+4. **IsFull**: Checking if the queue is full (applicable to array-based implementation).
+5. **Peek/Front**: Retrieving the element at the front of the queue without removing it.
+
+#### Types of Queues
+1. **Simple Queue**: Basic FIFO queue.
+2. **Circular Queue**: A more efficient version where the positions can wrap around to the beginning.
+3. **Priority Queue**: Elements are ordered by priority.
+4. **Double-Ended Queue (Deque)**: Elements can be added or removed from both ends.
+
+### Queue Implementation Using Arrays
+
+#### Structure Definition
+```c
+#define MAX 100  // maximum number of elements in the queue
+
+typedef struct {
+    int items[MAX];
+    int front, rear;
+} Queue;
+```
+- `items`: Array to store the elements.
+- `front`: Index of the front element.
+- `rear`: Index of the rear element.
+
+#### Initialize the Queue
+```c
+void initQueue(Queue *q) {
+    q->front = -1;
+    q->rear = -1;
+}
+```
+- Sets the initial state of the queue with `front` and `rear` as -1, indicating an empty queue.
+
+#### Check if the Queue is Full
+```c
+int isFull(Queue *q) {
+    return (q->rear == MAX - 1);
+}
+```
+- Returns `1` if the queue is full, otherwise `0`.
+
+#### Check if the Queue is Empty
+```c
+int isEmpty(Queue *q) {
+    return (q->front == -1 || q->front > q->rear);
+}
+```
+- Returns `1` if the queue is empty, otherwise `0`.
+
+#### Enqueue Operation
+```c
+void enqueue(Queue *q, int value) {
+    if (isFull(q)) {
+        printf("Queue is full!\n");
+        return;
+    }
+    if (q->front == -1) q->front = 0;
+    q->rear++;
+    q->items[q->rear] = value;
+    printf("Inserted %d\n", value);
+}
+```
+- Adds an element to the end of the queue. If the queue was initially empty (`front` is -1), set `front` to 0.
+
+#### Dequeue Operation
+```c
+int dequeue(Queue *q) {
+    int item;
+    if (isEmpty(q)) {
+        printf("Queue is empty!\n");
+        return -1;
+    }
+    item = q->items[q->front];
+    q->front++;
+    if (q->front > q->rear) {
+        q->front = q->rear = -1;
+    }
+    return item;
+}
+```
+- Removes an element from the front of the queue and adjusts the `front` index. If the queue becomes empty after this operation, reset `front` and `rear` to -1.
+
+#### Display the Queue
+```c
+void display(Queue *q) {
+    int i;
+    if (isEmpty(q)) {
+        printf("Queue is empty\n");
+    } else {
+        printf("Queue contains: ");
+        for (i = q->front; i <= q->rear; i++) {
+            printf("%d ", q->items[i]);
+        }
+        printf("\n");
+    }
+}
+```
+- Prints the elements in the queue from `front` to `rear`.
+
+### Queue Implementation Using Linked Lists
+
+#### Structure Definition
+```c
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+typedef struct {
+    Node *front, *rear;
+} Queue;
+```
+- `Node`: Represents each element in the queue.
+- `Queue`: Contains pointers to the `front` and `rear` nodes.
+
+#### Initialize the Queue
+```c
+void initQueue(Queue *q) {
+    q->front = q->rear = NULL;
+}
+```
+- Sets the initial state of the queue with `front` and `rear` as `NULL`.
+
+#### Check if the Queue is Empty
+```c
+int isEmpty(Queue *q) {
+    return (q->front == NULL);
+}
+```
+- Returns `1` if the queue is empty, otherwise `0`.
+
+#### Enqueue Operation
+```c
+void enqueue(Queue *q, int value) {
+    Node *temp = (Node*)malloc(sizeof(Node));
+    if (!temp) {
+        printf("Memory allocation error\n");
+        return;
+    }
+    temp->data = value;
+    temp->next = NULL;
+    if (q->rear == NULL) {
+        q->front = q->rear = temp;
+    } else {
+        q->rear->next = temp;
+        q->rear = temp;
+    }
+    printf("Inserted %d\n", value);
+}
+```
+- Allocates a new node and adds it to the end of the queue. If the queue was initially empty (`rear` is `NULL`), set both `front` and `rear` to the new node.
+
+#### Dequeue Operation
+```c
+int dequeue(Queue *q) {
+    if (isEmpty(q)) {
+        printf("Queue is empty!\n");
+        return -1;
+    }
+    Node *temp = q->front;
+    int item = temp->data;
+    q->front = q->front->next;
+    if (q->front == NULL) {
+        q->rear = NULL;
+    }
+    free(temp);
+    return item;
+}
+```
+- Removes the node from the front of the queue and frees its memory. If the queue becomes empty, set `rear` to `NULL`.
+
+#### Display the Queue
+```c
+void display(Queue *q) {
+    Node *temp = q->front;
+    if (isEmpty(q)) {
+        printf("Queue is empty\n");
+    } else {
+        printf("Queue contains: ");
+        while (temp) {
+            printf("%d ", temp->data);
+            temp = temp->next;
+        }
+        printf("\n");
+    }
+}
+```
+- Traverses the linked list from `front` to `rear` and prints each node's data.
+
+By understanding these steps and the theoretical background, you can effectively implement and manipulate a queue in C using both arrays and linked lists.
